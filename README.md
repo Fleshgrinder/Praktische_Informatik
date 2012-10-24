@@ -1,4 +1,5 @@
-= Praktische Informatik
+Praktische Informatik
+=====================
 
 Repository for my “Praktische Informatik” tution at the University of Applied Science in Salzubrg, Austria.
 
