@@ -6,3 +6,4 @@ Geben Sie eine Reihenfolge für das Einfügen der 10 Schlüssel 0, 1, 2, …, 8,
 Lösung
 ======
 
+Ich füge in der folgenden Reihenfolge ein: 5, 3, 7, 1, 6, 4, 8, 0, 9, 2
