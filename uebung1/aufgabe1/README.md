@@ -5,3 +5,17 @@ Erweitern Sie den *Heap* aus der Vorlesung mit Hilfe von einem oder mehreren Tem
 
 Lösung
 ======
+
+```bash
+$ make
+g++ -Wall -g -o aufgabe1 ./main.cpp
+$ make test
+./aufgabe1
+Custom4
+Custom3
+Custom1
+Custom0
+Custom2
+$ make clean
+rm -f aufgabe1
+```
