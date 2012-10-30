@@ -11,3 +11,4 @@ Gegeben sei der folgende AVL-Baum.
 Lösung
 ======
 
+![AVL-Lösung](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/übung1/aufgabe6/avl-loesung.png)
