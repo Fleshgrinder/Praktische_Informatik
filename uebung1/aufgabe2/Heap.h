@@ -4,12 +4,10 @@
 
 using namespace std;
 
-template <class T>
 class Heap {
 public:
 
-    Heap(unsigned n) : elements(0), size(n), data(new T[n]) {
-    }
+    Heap(unsigned n) : elements(0), size(n), data(new double[n]) {}
 
     virtual ~Heap() {
         delete [] data;
@@ -19,12 +17,12 @@ public:
         return elements;
     }
 
-    T top() const {
+    double top() const {
         assert(elements > 0);
         return data[0];
     }
 
-    void push(T d) {
+    void push(double d) {
         assert(elements < size);
 
         data[elements++] = d;
@@ -61,16 +59,23 @@ public:
         } while (true);
     }
 
+    void sort() {
+        for (unsigned i = this->size; i > 0; i--) {
+            this->print();
+            this->pop();
+        }
+    }
+
     void print() const {
         for (unsigned i = 0; i < elements; i++) {
             cout << data[i] << "-";
         }
-	cout << endl;
+        cout << endl;
     }
 private:
     unsigned elements;
     unsigned size;
-    T *data;
+    double *data;
 
     unsigned left_index(unsigned idx) const {
         return 2 * idx + 1;
