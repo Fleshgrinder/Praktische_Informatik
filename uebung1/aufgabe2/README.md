@@ -25,3 +25,5 @@ $ make clean
 rm -f aufgabe2
 ```
 
+Um einen neuen Knoten hinzuzufügen benötigen wir maximal *log(n)*-Schritte da ein Baum mit *n* Knoten die Tiefe *d ≤ log(n)* hat.
+Beim Sortieren wird nochmals jeder Knoten betrachtet, daraus folgt die Zeitkomplexität von *O(n · log(n))*.
