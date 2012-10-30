@@ -23,7 +23,7 @@ int main() {
     for (unsigned i = 0; i < heapSize; i++) {
         heap.push(array[i]);
     }
-    heap.sort();
+    heap.sortAsc();
 
     return 0;
 }

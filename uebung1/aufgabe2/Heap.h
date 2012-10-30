@@ -36,8 +36,11 @@ public:
         }
     }
 
-    void pop() {
+    double pop() {
         assert(elements > 0);
+
+        // get highest value from root before it's gone.
+        double value = data[0];
 
         data[0] = data[--elements];
         unsigned idx = 0;
@@ -57,18 +60,38 @@ public:
                 idx = max_idx;
             } else break;
         } while (true);
+
+        return value;
     }
 
-    void sort() {
-        for (unsigned i = this->size; i > 0; i--) {
-            this->print();
-            this->pop();
+    void sortAsc() {
+        int size = this->elements;
+        double* sorted = new double[size];
+        for (int i = size - 1; i >= 0; i--) {
+            sorted[i] = this->pop();
         }
+        this->print(sorted, size);
+    }
+
+    void sortDesc() {
+        int size = this->elements;
+        double* sorted = new double[size];
+        for (int i = 0; i < size; i++) {
+            sorted[i] = this->pop();
+        }
+        this->print(sorted, size);
     }
 
     void print() const {
         for (unsigned i = 0; i < elements; i++) {
             cout << data[i] << "-";
+        }
+        cout << endl;
+    }
+
+    void print(double* array, unsigned size) const {
+        for (unsigned i = 0; i < size; i++) {
+            cout << array[i] << "-";
         }
         cout << endl;
     }
