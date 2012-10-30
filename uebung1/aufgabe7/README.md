@@ -29,7 +29,7 @@ void insert(AvlNode* &node, double d) {                                     // T
 }                                                                           //
 ```
 
-![Formel](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/übung1/aufgabe7/formel.png)
+![Formel](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/uebung1/aufgabe7/formel.png)
 
 Nach herauskürzen aller Konstanten bleibt der Logarithmus von *n* zum Quadrat übrig.
 
