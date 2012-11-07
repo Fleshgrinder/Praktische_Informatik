@@ -71,6 +71,7 @@ public:
             sorted[i] = this->pop();
         }
         this->print(sorted, size);
+        delete [] sorted;
     }
 
     void sortDesc() {
@@ -80,6 +81,7 @@ public:
             sorted[i] = this->pop();
         }
         this->print(sorted, size);
+        delete [] sorted;
     }
 
     void print() const {

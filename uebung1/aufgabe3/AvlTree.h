@@ -88,6 +88,7 @@ private:
                 else rotateRightLeft(node);
             }
         }
+        delete [] node;
     }
     AvlNode *root;
 };
