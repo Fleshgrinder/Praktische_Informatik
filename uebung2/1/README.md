@@ -64,4 +64,4 @@ Vectorized needs 9.68% of time of Original.
 
 * Bei uns dauert die Vectorized-Version länger als die Sub-Matrix-Version. Diesen hohen Grad an Optimierung konnten wir nur durch Verwendung des `-O3`-Flags erreichen.
 * _Locality_ bedeutet, dass zu einem bestimmten Zeitabstand nur auf einen kleinen Speicherbereich zugegriffen wird. Deshalb lassen sich die Daten besser cachen.
-* _Alignment_ bezieht sich darauf, wie Datenstrukturen im Speicher abgelegt werden. 
+* _Alignment_ bezieht sich darauf, wie Datenstrukturen im Speicher abgelegt werden. Ist die Adresse eines Datenelements kein vielfaches von 2 (oder nicht 1) dann sind die Daten nicht ausgerichtet. Ein Zugriff dauert dann 20 bis 30% länger als der Zugriff auf korrekt ausgerichtete Daten.
