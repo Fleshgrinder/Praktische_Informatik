@@ -53,9 +53,15 @@ __Antwort__
 ```c
 $ make test
 ./mm
-Original: 15217656 ms
-Transposed: 2922590 ms
-Sub-Matrix: 3490616 ms
-Transposed needs 19.21% of time of Original.
-Sub-Matrix needs 22.94% of time of Original.
+Original: 12519830 ms
+Transposed: 2890913 ms
+Sub-Matrix: 867917 ms
+Vectorized: 1211789 ms
+Transposed needs 23.09% of time of Original.
+Sub-Matrix needs 6.93% of time of Original.
+Vectorized needs 9.68% of time of Original.
 ```
+
+* Bei uns dauert die Vectorized-Version länger als die Sub-Matrix-Version. Diesen hohen Grad an Optimierung konnten wir nur durch Verwendung des `-O3`-Flags erreichen.
+* _Locality_ bedeutet, dass zu einem bestimmten Zeitabstand nur auf einen kleinen Speicherbereich zugegriffen wird. Deshalb lassen sich die Daten besser cachen.
+* _Alignment_ bezieht sich darauf, wie Datenstrukturen im Speicher abgelegt werden. 
