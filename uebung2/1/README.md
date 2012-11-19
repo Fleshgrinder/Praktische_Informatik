@@ -46,7 +46,16 @@ __Antwort__
 
 ## Übung 2.1d
 
-Lesen Sie Kapitel 6.2, 6.2.1 (bis Seite 51) und probieren Sie den angegeben Code zur Matrix-Multiplikation aus. Messen Sie mit `gettimeofday()` und vergleichen Sie das Ergebnis mit dem Artikel. Was versteht man unter locality. Was versteht man unter _alignment_?
+Lesen Sie Kapitel 6.2, 6.2.1 (bis Seite 51) und probieren Sie den angegeben Code zur Matrix-Multiplikation aus. Messen Sie mit `gettimeofday()` und vergleichen Sie das Ergebnis mit dem Artikel. Was versteht man unter _locality_, Was versteht man unter _alignment_?
 
 __Antwort__
 
+```c
+$ make test
+./mm
+Original: 15217656 ms
+Transposed: 2922590 ms
+Sub-Matrix: 3490616 ms
+Transposed needs 19.21% of time of Original.
+Sub-Matrix needs 22.94% of time of Original.
+```
