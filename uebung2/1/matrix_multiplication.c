@@ -4,6 +4,7 @@
  * 6.2 Cache Access (page 49)
  *
  * AUTHOR: Richard Fussenegger
+ * AUTHOR: Markus Deutschl
  */
 
 #include <stdio.h>

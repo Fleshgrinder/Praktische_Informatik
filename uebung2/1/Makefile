@@ -3,6 +3,9 @@
 # command substitution:
 # http://ubuntuforums.org/showpost.php?s=9d8c54988be3eaf3efc382a25e5e743b&p=3307591&postcount=3
 #
+# AUTHOR: Richard Fussenegger
+# AUTHOR: Markus Deutschl
+#
 
 all: mm
 
