@@ -1,18 +1,12 @@
-CC=g++
-CFLAGS=-c -Wall -I /usr/local/include/boost-1_37/ -g 
-LDFLAGS=-L /usr/local/lib
-SOURCES=skiplists.hpp test.cpp
-OBJECTS=$(SOURCES:.cpp=.o)
-EXECUTABLE=skiplist
+EXEC = skiplist
 
-all: $(SOURCES) $(EXECUTABLE)
-	
+all: $(EXEC)
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+$(EXEC): $(EXEC).cpp $(EXEC).h
+	$(CXX) -Wall -g -o $@ $(EXEC).cpp
 
-.cpp.o:
-	$(CC) $(CFLAGS) $< -o $@
+test: $(EXEC)
+	./$(EXEC)
 
 clean:
-	rm -fr *.o *~ $(EXECUTABLE)
+	rm -f $(EXEC)
