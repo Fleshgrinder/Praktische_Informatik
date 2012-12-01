@@ -7,7 +7,8 @@ pow = pow
 max = max
 EXEC = calc
 
-all: $(EXEC)
+all:
+	echo "Usage:\nCorrect order is important!\n\tmake plus|minus|mult|pow|max\n\tmake test\nor\n\tmake clean"
 
 $(CG): $(CG).cpp
 	$(CXX) -Wall -o $@ $(CG).cpp

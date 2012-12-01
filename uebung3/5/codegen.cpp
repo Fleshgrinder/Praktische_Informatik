@@ -182,12 +182,12 @@ struct IRNode {
    * Generate 32 bit machine code for pownage.
    */
   void generateMachineCodePow32() const {
-    // Evaluate left value
+    // Evaluate left node
     left->generateMachineCode32();
     // Push the left value to the stack (to preserve result)
     printf("\tpushl\t%%eax\n");
 
-    // Evaluate right value
+    // Evaluate right node
     right->generateMachineCode32();
     // Move right value (in Accumulator Register) to the Counter Register
     printf("\tmovl\t%%eax, %%ecx\n");
@@ -206,21 +206,21 @@ struct IRNode {
    * Generate 64 bit machine code for pownage.
    */
   void generateMachineCodePow64() const {
-    // Evaluate left value
+    // Evaluate left node.
     left->generateMachineCode64();
-    // Push the left value to the stack (to preserve result)
+    // Push the left value to the stack (to preserve result).
     printf("\tpushq\t%%rax\n");
 
-    // Evaluate right value
+    // Evaluate right node.
     right->generateMachineCode64();
-    // Move right value (in Accumulator Register) to the Counter Register
+    // Move right value (in Accumulator Register) to the Counter Register.
     printf("\tmovq\t%%rax, %%rcx\n");
 
-    // Move value '1' to the Accumulator Register as a start
+    // Move value '1' to the Accumulator Register as a start.
     printf("\tmovl\t$1, %%eax\n");
-    // Retrieve left value from stack again for multiplication
+    // Retrieve left value from stack again for multiplication.
     printf("\tpopq\t%%rbx\n");
-    // Loop label: Multiply Base with Accumulator Register
+    // Loop label: Multiply Base with Accumulator Register.
     printf("loop_head:\tmull\t%%ebx\n");
     // Loop back to loop label
     printf("\tloop loop_head\n");
@@ -230,14 +230,52 @@ struct IRNode {
    * Generate 32 bit machine code for max.
    */
   void generateMachineCodeMax32() const {
-    printf("cool code in 32 bit");
+    // Evaluate left node
+    left->generateMachineCode32();
+    // Push the left value to the stack (to preserve result)
+    printf("\tpushl\t%%eax\n");
+
+    // Evaluate right node
+    right->generateMachineCode32();
+    
+    // Retrieve left value from stack again for comparison.
+    printf("\tpopl\t%%ebx\n");
+    
+    // Compare Accumulator register (right value) to Base register (left value).
+    printf("\tcmp\t%%eax, %%ebx\n");
+    // Jump to label if the right value (EAX) is smaller than the left value (EBX).
+    printf("\tja\tsmaller\n");
+    // Return otherwise.
+    printf("\tretl\n");
+    
+    // Jump label if left value is greater, move left value (EBX) to Accumulator register.
+    printf("smaller:\tmovl\t%%ebx, %%eax\n");
   }
 
   /**
    * Generate 64 bit machine code for max.
    */
   void generateMachineCodeMax64() const {
-    printf("cool code in 64 bit");
+    // Evaluate left node
+    left->generateMachineCode64();
+    // Push the left value to the stack (to preserve result)
+    printf("\tpushq\t%%rax\n");
+
+    // Evaluate right node
+    right->generateMachineCode64();
+    
+    // Retrieve left value from stack again for comparison.
+    printf("\tpopl\t%%rbx\n");
+    
+    // Compare Accumulator register (right value) to Base register (left value).
+    printf("\tcmp\t%%eax, %%ebx\n");
+    // Jump to label if the right value (EAX) is smaller than the left value (EBX).
+    printf("\tja\tsmaller\n");
+    // Return otherwise.
+    printf("\tretq\n");
+    
+    // Jump label if left value is greater, move left value (EBX) to Accumulator register.
+    printf("smaller:\tmovq\t%%rbx, %%rax\n");
   }
 
   /**
