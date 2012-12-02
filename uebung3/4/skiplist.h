@@ -11,6 +11,8 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <list>
+#include <vector>
 
 using namespace std;
 
@@ -57,14 +59,60 @@ public:
     }
 
     /**
+     * Get a vector with all inserted, sorted keys of our skiplist.
+     *
+     * @return
+     *   Vector containing all sorted keys.
+     */
+    vector<Tkey> getKeyVector() {
+        vector<Tkey> keyVector;
+        node* nodeObj = this->head->next[0];
+
+        while (true) {
+            if (nodeObj == NULL) {
+                break;
+            }
+            keyVector.push_back(nodeObj->key);
+            nodeObj = nodeObj->next[0];
+        }
+
+        return keyVector;
+    }
+
+    /**
+     * Get a list with all inserted, sorted keys of our skiplist.
+     *
+     * @return
+     *   List containing all sorted keys.
+     */
+    list<Tkey> getKeyList() {
+        list<Tkey> keyList;
+        node* nodeObj = this->head->next[0];
+
+        while (true) {
+            if (nodeObj == NULL) {
+                break;
+            }
+            keyList.push_back(nodeObj->key);
+            nodeObj = nodeObj->next[0];
+        }
+
+        return keyList;
+    }
+
+    /**
      * Print all nodes of the current skiplist to the standard output.
      */
     void print() {
-        node* nodeObj = this->head;
-        do {
-            cout << "Node with key " << nodeObj->key << " has value " << nodeObj->val << "." << endl;
+        node* nodeObj = this->head->next[0];
+
+        while (true) {
+            if (nodeObj == NULL) {
+                break;
+            }
+            cout << "Node with key " << nodeObj->key << " has value " << nodeObj->val << " with " << nodeObj->size << " levels." << endl;
             nodeObj = nodeObj->next[0];
-        } while (nodeObj->next[0]);
+        }
     }
 
 private:
