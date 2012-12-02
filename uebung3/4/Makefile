@@ -2,8 +2,8 @@ EXEC = skiplist
 
 all: $(EXEC)
 
-$(EXEC): $(EXEC).cpp $(EXEC).h
-	$(CXX) -Wall -g -o $@ $(EXEC).cpp
+$(EXEC): test.cpp $(EXEC).h
+	$(CXX) -Wall -g -o $@ test.cpp
 
 test: $(EXEC)
 	./$(EXEC)
