@@ -208,7 +208,7 @@ private:
      * @param nodeObj
      * @param key
      * @param currentLevel
-     * @return 
+     * @return
      */
     Tval search(node* nodeObj, const Tkey key, int currentLevel) const {
         // Search failed.
@@ -279,7 +279,7 @@ private:
         // try to insert there.
         this->insert(nextNodeObj, newNodeObj, currentLevel);
     }
-    
+
 };
 
 #endif	/* SKIPLISTS_H */
