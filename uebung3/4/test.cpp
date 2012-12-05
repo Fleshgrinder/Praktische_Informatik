@@ -47,17 +47,11 @@ int main() {
 
     //Two new Arrays with keys and values in the right order
     int newKeys[5];
-    int newValues[5];
     newKeys[0] = 12;
-    newValues[0] = 8;
     newKeys[1] = 27;
-    newValues[1] = 9;
     newKeys[2] = 67;
-    newValues[2] = 2;
     newKeys[3] = 83;
-    newValues[3] = 6;
     newKeys[4] = 91;
-    newValues [4] = 3;
 
     //Get list of Keys
     typedef vector<int> intVector;
@@ -75,19 +69,6 @@ int main() {
         assert(newKeys[i] == skiplistKeys[i]);
     }
     cout << "True - All keys equal\n" << endl;
-
-    //TODO: Value List
-    //Get list of values
-    cout << "Check if values equal the values of sorted array" << endl;
-    list<int> skiplistValues = skiplistObj.getKeyList();
-    i = 0;
-    for (list<int>::const_iterator it = skiplistValues.begin(), end = skiplistValues.end(); it != end; ++it) {
-        //cout << newValues[i] << endl;
-        //cout << *it << endl;
-        //assert(newValues[i] == *it);
-        ++i;
-    }
-    cout << "True - all values equal\n" << endl;
 
     //TODO: Remove
     //Remove value
