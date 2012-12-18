@@ -8,4 +8,6 @@ Implementieren Sie eine Template-Klasse __RingBuffer__ (auch _circular buffer_ g
 
 ## Lösung
 
-
+```shell
+make test
+```
