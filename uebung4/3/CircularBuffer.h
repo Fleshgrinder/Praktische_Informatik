@@ -42,7 +42,7 @@ public:
      * Copy constructor for CircularBuffer.
      *
      * @param cb
-     *   The other CircularBuffer instance.
+     *   The other CircularBuffer instance passed by reference.
      */
     CircularBuffer(CircularBuffer& cb) {
         this->count = cb.count;
@@ -57,7 +57,7 @@ public:
     /**
      * Assignment operator for CircularBuffer.
      *
-     * @param cb
+     * @param cbTmp
      *   The other CircularBuffer instance.
      * @return
      *   Current CircularBuffer instance with copied values from other instance.
