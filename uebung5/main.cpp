@@ -9,7 +9,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
-#include "CacheInspector.h"
+#include <string>
+#include <fstream>
+#include "CacheSimulator.h"
 
 using namespace std;
 
@@ -30,5 +32,25 @@ void printSeparator() {
  *   Always returns EXIT_SUCCESS.
  */
 int main() {
+    // TODO: Maybe we should create a base class CacheSimulator and two child classes. One for the
+    // InstructionCacheSimulator (only reading instructions) and one for the DataCacheSimulator (
+    // only reading data)?
+    CacheSimulator iCache(4096, direct_mapped, 32);
+    //InstructionCacheSimulator iCache(4096, direct_mapped, 32);
+    CacheSimulator dCache(256 * 1024, full_assoc, 32);
+    //DataCacheSimulator dCache(256 * 1024, full_assoc, 32);
+    dCache->setAssociativityLevel(4);
+
+    // Prepare reading of lackey memory trace file.
+    ifstream inputStream("trace-ls.txt");
+    string line;
+
+    // Read trace line by line.
+    while (inputStream) {
+        getline(inputStream, line);
+        if (line.find("I") != string::npos) iCache.read(line);
+        else dCache.read(line);
+    }
+
     return EXIT_SUCCESS;
 }
