@@ -11,7 +11,7 @@ Implementieren Sie einen Cache-Simulator. Dieser soll mit `valgrind lackey` erze
     * data cache: Größe 256 Kilobytes, cache line size 32 Bytes, 4-fach assoziativ.
 * Ermitteln Sie für obige Konfiguration wie viele cache lines belegt werden.
 
-Hinweis: Speicherzugriffe konnen sich über mehr als eine cache line erstrecken.
+__Hinweis:__ Speicherzugriffe können sich über mehr als eine cache line erstrecken.
 
 ## Lösung
 
