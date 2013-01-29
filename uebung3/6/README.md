@@ -7,6 +7,8 @@ Berechnen Sie unter Annahme von 64-bit Adressen die folgenden Werte für einen 8
 
 ## Lösung
 
+Der Offset ergibt sich aus der Art der Adressen. 32-bit Adressen lassen sich mit 5 bit (2^5 = 32) repräsentieren, 64-bit Adressen mit 6 bit (2^6 = 64).
+
 ```
 |-------------------------------------------------|---------|------|
 |                      49bit                      |   9bit  | 6bit |
