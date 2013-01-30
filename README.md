@@ -407,6 +407,23 @@ Jeder Prozess besitzt sein eigenes __page directory__. Das Betriebssystem kümme
 ##### Page Faults / Seitenfehler
 Wenn beim Zugriff auf eine Seite ein Fehler auftritt kann das Betriebssystem eingreifen um den Zugriff abzulehnen oder Paging einzuleiten (die Seite auslagern). Dazu muss das Betriebssystem wenig benutzte physikalische Speicher-Frames suchen, den Inhalt gegebenenfalls sichern, die Seite in den Frame laden, Abbildungstabelle anpassen und den Befehl nochmals ausführen.
 
+##### Demand Paging
+Beim starten eines Prozesses ist unklar wieviel Seiten geladen werden sollen, um diesem Problem entgegen zu setzen, werden die Seiten reserviert sobald das Progamm diese anfordert (virtuell und physikalisch).
+
+##### Working Set
+Das _Working Set_ ist die Menge der Seiten, die ein Prozess zu einem bestimmten Zeitpunkt benötigt. Pass das Set in den Speicher ist alles ok. Sollte der verfügbare Speicher jedoch kleiner sein, führt dies zu sehr vielen __page faults__.
+
+###### Thrashing
+Das System ist nur noch am ein- und auslagern von Seiten.
+
+#### Shared Pages
+Prozesse können sich Seiten teilen (z. B. Programmcode) aber auch Daten sind möglich:
+1. Page auf read-only setzen
+2. Bei Schreibzugriff: page kopieren, jeder Prozess erhält eine eigene Kopie, auf read-write setzen; diese Strategie nennt sich copy-on-write (COW)
+3. Vorteil: pages die nie beschrieben werden, müssen nie kopiert werden
+
+![Shared Pages](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+
 ### Fully associative cache
 Cache ist in __cache lines__ organisiert, es werden immer ganze __cache lines__ transferiert. Ein 4 MB L2 Cache hat also Platz für 65.536 __cache lines__. Für jede __cache line__ gibt es einen __tag__ der bestimmt welches Datum in einer __cache line__ gespeicher ist.
 
@@ -539,4 +556,24 @@ Aussehen:
 ### Instruction Trace
 _Brauchen wir das?_
 
-### 
+## Interprozesskommunikation
+Dient zum Austausch von Daten zwischen Prozessen. Normalerweise sind Prozesse durch die virtuellen Adressräume strikt getrennt.
+
+Möglichkeiten zum Datenaustausch:
+* via Dateisystem (langsam)
+* Sockets
+* Shared Memory
+* Semaphoren
+* Memory Mapped Files
+* Unix Domain Sockets
+* Pipes
+* …
+
+### Shared Memory
+API um Speicherseiten zwischen Prozessen zu teilen: `shmget()`, `shmat()`, `shmdt()`, `CreateFileMapping()` (Windows), `MapViewOfFile()` (Windows)
+Kommandozeilentools: `ipcs`, `ipcrm`
+
+### Memory Mapped Files
+Bindet Dateien in den Speicher ein: `mmap()`, `munmap()`, `CreateFileMapping()` (Windows)
+
+## Refactoring
