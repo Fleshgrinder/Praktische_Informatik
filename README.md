@@ -362,7 +362,7 @@ Caching ist ein Verfahren, das Daten zwischenspeichert um sie bei wiederholtem Z
 * __Spatial Locality__: weitere Zugriffe in der Nähe wahrscheinlich
 * __Temporal Locality__: weitere Zugriffe in naher Zukunft wahrscheinlich
 * __Cache Hit / Miss__: benötigtes Datum kann im Cache gefunden werden / oder nicht
-* __Latency__: Zeit um das Datum eines Blocks (__cache line__) zu holen; __bandwidth__ bestimmt die Dauer des weiteren Ladevorgangs
+* __Latency__: Zeit um das Datum eines Blocks ( __cache line__ ) zu holen; __bandwidth__ bestimmt die Dauer des weiteren Ladevorgangs
 
 ##### Fragen zu Caches
 * Wo wird ein Block im Cache gespeichert?
@@ -405,7 +405,7 @@ Virtuelle Adressräume sind in Seiten (__pages__) eingeteilt und physikalischer 
 Jeder Prozess besitzt sein eigenes __page directory__. Das Betriebssystem kümmert sich bei Prozesswechsel, dass Register neu geladen werden.
 
 ##### Page Faults / Seitenfehler
-Wenn beim Zugriff auf eine Seite ein Fehler auftritt kann das Betriebssystem eingreifen um den Zugriff abzulehnen oder Paging einzuleiten (die Seite auslagern). Dazu muss das Betriebssystem wenig benutzte physikalische Speicher-Frames suchen, den Inhalt gegebenenfalls sichern, die Seite in den Frame laden, Abbildungstabelle anpassen und den Befehl nochmals ausführen.
+Wenn beim Zugriff auf eine Seite ein Fehler auftritt kann das Betriebssystem eingreifen um den Zugriff abzulehnen oder Paging einzuleiten (die Seite einlagern). Dazu muss das Betriebssystem wenig benutzte physikalische Speicher-Frames suchen, den Inhalt gegebenenfalls sichern, die Seite in den Frame laden, Abbildungstabelle anpassen und den Befehl nochmals ausführen.
 
 ##### Demand Paging
 Beim starten eines Prozesses ist unklar wieviel Seiten geladen werden sollen, um diesem Problem entgegen zu setzen, werden die Seiten reserviert sobald das Progamm diese anfordert (virtuell und physikalisch).
@@ -418,9 +418,9 @@ Das System ist nur noch am ein- und auslagern von Seiten.
 
 #### Shared Pages
 Prozesse können sich Seiten teilen (z. B. Programmcode) aber auch Daten sind möglich:
-1. Page auf read-only setzen
-2. Bei Schreibzugriff: page kopieren, jeder Prozess erhält eine eigene Kopie, auf read-write setzen; diese Strategie nennt sich copy-on-write (COW)
-3. Vorteil: pages die nie beschrieben werden, müssen nie kopiert werden
+  1. Page auf read-only setzen
+  2. Bei Schreibzugriff: page kopieren, jeder Prozess erhält eine eigene Kopie, auf read-write setzen; diese Strategie nennt sich copy-on-write (COW)
+  3. Vorteil: pages die nie beschrieben werden, müssen nie kopiert werden
 
 ![Shared Pages](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
 
