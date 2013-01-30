@@ -585,6 +585,26 @@ _Refactoring_ bedeutet die interne Struktur einer Software zu optimieren und zu 
 * Refactoring verändert das Programm in kleinen Schritten.
 * Wenn Code stinkt muss Refactoring angewendet werden!
 
+### Warum Refactoring?
+* Verbessert das Design der Software
+* Code wird leichter verständlich
+* Hilft Bugs zu entdecken
+* Kann das Programm schneller machen
+
+### Wann Refactoring?
+* Rule of Three:
+	1. Code wird erstellt
+	2. Code wird dupliziert (Autsch!)
+	3. Refactoring!
+* Wenn eine neue Funktion dazukommt
+* Wenn ein Fehler behoben wird
+* Während Code Reviews
+
+### Wann kein Refactoring?
+* Wenn Klassen Datenbankdesign wiederspiegeln und die Daten in der Datenbank nur schwer migriert werden können
+* Wenn sich dadurch die Schnittstellen (Interfaces) des Programms ändern würden
+* Wenn das Programm so schlecht ist, dass ein Neuanfang sich rentiert
+
 ### Exkurs: Tests
 * Tests sollen …
   * schnell ablaufen (wenige Sekunden)
@@ -631,9 +651,9 @@ Vorgehen:
 
 ### Refactoringkatalog (Auswahl)
 #### Methode extrahieren / Extract Method [[ref](http://www.refactoring.com/catalog/extractMethod.html)]
-__Ein Codefragment kann zusammengefasst werden.__
+_Ein Codefragment kann zusammengefasst werden._
 
-_Setze die Fragmente in eine Methode, deren Namen den Zweck kennzeichnet._
+__Setze die Fragmente in eine Methode, deren Namen den Zweck kennzeichnet.__
 
 ```Java
 void printOwing() {
@@ -645,7 +665,7 @@ void printOwing() {
 }
 ```
 
-_↓_
+__↓__
 
 ```Java
 void printOwing() {
@@ -660,9 +680,9 @@ void printDetails (double outstanding) {
 ```
 
 #### Verschiebe Methode / Move Method [[ref](http://www.refactoring.com/catalog/moveMethod.html)]
-__Eine Methode wird von einer anderen Klasse mehr verwendet als von der definierenden Klasse.__
+_Eine Methode wird von einer anderen Klasse mehr verwendet als von der definierenden Klasse._
 
-_Erzeuge eine Methode mit ähnlichem Rumpf in der Klasse, die die Eigenschaft am meisten nutzt. Delegiere in der alten Methode an die neue Implementierung, oder lösche sie._
+__Erzeuge eine Methode mit ähnlichem Rumpf in der Klasse, die die Eigenschaft am meisten nutzt. Delegiere in der alten Methode an die neue Implementierung, oder lösche sie.__
 
 ![Move Method](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/move-method.gif)
 
@@ -703,9 +723,9 @@ class Person {
 ```
 
 #### Ersetze temporäre Variable durch Abfrage / Replace Temp with Query [[ref](http://www.refactoring.com/catalog/replaceTempWithQuery.html)]
-__Stelle den Ausdruck in eine Abfrage-Methode. Ersetze die temporäre Variable durch Aufrufe der Methode.__
+_Stelle den Ausdruck in eine Abfrage-Methode. Ersetze die temporäre Variable durch Aufrufe der Methode._
 
-_Eine temporäre Variable speichert das Ergebnis eines Ausdrucks._
+__Eine temporäre Variable speichert das Ergebnis eines Ausdrucks.__
 
 Warum?
 * Die Berechnung kommt u. U. in mehreren Methoden vor → Code-Duplikation
@@ -720,7 +740,7 @@ else
 	return basePrice * 0.98;
 ```
 
-_↓_
+__↓__
 
 ```Java
 	if (basePrice() > 1000)
@@ -734,3 +754,134 @@ double basePrice() {
 	return _quantity * _itemPrice;
 }
 ```
+
+#### Ersetzte Typ-spezifischen Code durch Unterklassen / Replace Type Code with Subclasses [[ref](http://www.refactoring.com/catalog/replaceTypeCodeWithSubclasses.html)]
+_Ein unveränderlicher Programmcode bestimmt das Verhalten einer Klasse._
+
+__Ersetze den Typ-spezifischen Code durch eine Unterklasse.__
+
+![Replace Type Code with Subclasses](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/replace-type-code-with-subclasses.gif)
+
+#### Ersetze Fallunterscheidungen durch Polymorphie / Replace Conditional with Polymorphism [[ref](http://www.refactoring.com/catalog/replaceConditionalWithPolymorphism.html)]
+_Eine Fallunterscheidung führt abhängig vom Typ eines Objektes unterschiedliches Verhalten aus._
+
+__Lege jeden Zweig der Fallunterscheidung in eine Methode einer Unterklasse. Die Methode der Oberklasse wird abstrakt und die neuen Methoden überschreiben die abstrakte Methode.__
+
+```Java
+double getSpeed() {
+	switch (_type) {
+	case EUROPEAN:
+		return getBaseSpeed();
+	case AFRICAN:
+		return getBaseSpeed() - getLoadFactor() * _numberOfCoconuts;
+	case NORWEIGIAN_BLUE:
+		return (_isNailed) ? 0 : getBaseSpeed(_voltage);
+	}
+	throw new RuntimeException ("Should be unreachable");
+}
+```
+
+__↓__
+
+![Replace Conditional with Polymorphism](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/replace-conditional-with-polymorphism.gif)
+
+### Anzeichen für schlechten Code / Code Smells
+_Das ist nur ein Auszug der Code Smells, es gibt noch weitere:_
+
+* Code-Duplizierung (duplicated code)
+	* Code-Duplizierung ist der am weitesten verbreitete smell:
+		* Explizit → identischer Code
+		* Subtil → Strukturen oder Prozessschritte die nach außen hin anders, grundsätzlich jedoch gleich sind 
+* Lange Methode (long method)
+	* Je länger eine Methode ist, desto unverständlicher ist sie. Besser ist es mehrere kurze Methoden mit sprechenden Namen zu erstellen, sprechende Methodennamen erübrigen oft das lesen vom Methodenkörper.
+* Große Klasse (large class)
+	* Wenn eine Klasse zu viel erledigen will hat sie meist zu viele Instanzvariablen. Hat eine Klasse zu viele Instanzvariablen ist duplizierter Code nicht weit entfernt. Eine Klasse mit zu viel Code ist ein Nährboden für duplizierten Code und Chaos.
+* Schrotkugeln herausoperieren (shotgun surgery)
+	* Sehr viele Änderungen an Klassen ziehen viele kleine Änderungen in anderen Klassen nach sich. Erstrecken sich diese Änderungen über sehr viele Klassen, können wichtige Änderungen leicht übersehen werden.
+* Neid (feature envy)
+	* Wenn eine Methode zur Ausführung etliche Methoden einer anderen Klasse benötigt. Es gibt Heuristiken zur Auswertung dieses smells. Anders ausgedrückt: Eine Methode interessiert sich mehr für die Eigenschaften – insbesondere die Daten – einer anderen Klasse als für jene ihrer eigenen Klasse.
+* Case-Anweisungen (switch statements)
+	* Polymorphismus macht Switch-Case-Anweisungen weitgehend überflüssig und erledigt das damit zusammenhängende Problem des duplizierten Codes.
+* Parallele Vererbungshierarchien (parallel inheritance hierarchies)
+	* Zu jeder Unterklasse in der einen Hierarchie gibt es immer auch eine Unterklasse in einer anderen Hierarchie.
+* Faule Klasse (lazy class)
+	* Eine Klasse leistet zu wenig, um ihre Existenz zu rechtfertigen.
+
+## Design Patterns
+_Auch hier haben wir nur einen Bruchteil durchgenommen von denen die es gibt._
+
+### Creational Pattern: Factory
+Es wird ein Interface für die Erstellung von Objekten definiert, die Entscheidung darüber, welche Klasse instanziiert wird, wird aber der Subklasse überlassen. 
+
+#### Anwendbarkeit
+* Eine Klasse kann nicht vorhersehen, welche Art von Objekten erstellt werden müssen.
+* Eine Klasse möchte, dass Subklassen die zu erstellenden Objekte spezifizieren.
+* Klassen delegieren Verantwortung an eine von mehreren Helfer-Subklassen, und man möchte das Wissen darüber, welche Helfer-Subklasse delegiert wird, lokalisieren.
+
+#### Auswirkungen
+* Ein möglicher Nachteil von factory methods ist, dass Anwender die creator-Klasse erweitern (subclassen) müssen, um ein konkretes Produktobjekt zu erzeugen.
+* Factory methods geben einer Subklasse Einhängepunkte (hooks) um eine erweiterte Version eines Objektes zu liefern.
+
+#### Klassendiagram
+
+![Factory Pattern](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/factory-pattern.jpg)
+
+#### Implementierung (Theorie)
+* __Product__ – Definiert ein Interface für Objekte
+* __ConcreteProduct__ – Implementiert das Product-Interface
+* __Creator__
+	* Deklariert die Factory-Methode, welche ein Objekt des Typs Product zurück gibt. 
+	* Kann eine Standardimplementierung der Factory-Methode definieren, welche ein Standard-ConreteProduct zurück liefert. 
+
+#### Implementierung (Praxis)
+```Java
+package factory;
+ 
+public interface Product {
+	// add useful methods
+}
+```
+
+```Java
+package factory;
+ 
+// Visibility set to PACKAGE SCOPED --> client has to use the interface
+class ConcreteProduct implements Product {
+	// implement useful methods
+}
+```
+
+```Java
+package factory;
+ 
+public interface Creator {
+	public Product create();
+}
+```
+
+```Java
+package factory;
+ 
+public class ConcreteCreator implements Creator {
+	public Product create() {
+		return new ConcreteProduct();
+	}
+}
+```
+
+```Java
+package demo;
+ 
+import factory.*;
+ 
+public class HowToUseFactory {
+	public static void main(String[] args) {
+		// Create a new factory that can create products.
+		Creator factory = new ConcreteCreator();
+ 
+		// Let the factory create a product
+		Product awesome = factory.create();	
+	}
+}
+```
+
