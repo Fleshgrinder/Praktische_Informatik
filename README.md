@@ -7,7 +7,7 @@ Ein __Heap__ ist eine baumartige Datenstruktur. Es wird zwischen _Max-Heap_ und 
 ### Max-Heap
 Beim __Max-Heap__ befindet sich der wertemäßig größte Knoten an der Wurzel. Daraus folgt, dass Knoten B ein Kind von Knoten A ist gdw. der Wert von A ≧ dem Wert von B ist.
 
-![Max-Heap](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+![Max-Heap](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/max-heap.png)
 
 Knoten B ist Kind von Knoten A → `key(A) >= key(B)`
 
@@ -133,7 +133,7 @@ Die [C++ Standard Template Library (STL)](https://de.wikipedia.org/wiki/Standard
 ### Priority Queue
 _Priority Queues_ sind in C++ sogenannte [__Container Adaptor__](http://www.cplusplus.com/reference/stl/). In der C++-Implementierung ist das erste Element im Container immer das größte Element und wird mit einem Heap implementiert. Container Adaptors sind Klassen die einen Container beinhalten und spezielle Zugriffsmethoden bereitstellen (in anderen Programmiersprachen (z. B. Java) würde dies als Interface implementiert werden).
 
-![Container Adaptor](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+![Container Adaptor](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/container-adaptor.png)
 
 ```Cpp
 template<
@@ -154,6 +154,8 @@ In einem _Binärbaum_ besitzt jeder Knoten maximal zwei Kindknoten. Kinder des l
 
 ![Binärbaum](https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Binary-tree.svg/500px-Binary-tree.svg.png)
 
+![Binärbaum 2](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/binary-tree.png)
+
 ### Höhe
 * 0 … ohne Elemente
 * 1 … mit einem Element
@@ -165,6 +167,8 @@ function height(node) {
   return 1 + Math.max(height(node.left), height(node.right));
 }
 ```
+
+![Binärbaum Höhe](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/binary-tree-height.png)
 
 ### Komplexität
 * O(Höhe) … Suchen, Einfügen, Löschen
