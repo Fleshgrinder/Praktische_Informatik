@@ -630,14 +630,14 @@ Vorgehen:
 4. Ziel erreicht oder ab Schritt 2 Prozedere wiederholen
 
 ### Refactoringkatalog (Auswahl)
-#### Methode extrahieren / Extract Method [ref](http://www.refactoring.com/catalog/extractMethod.html)
+#### Methode extrahieren / Extract Method [[ref](http://www.refactoring.com/catalog/extractMethod.html)]
 __Ein Codefragment kann zusammengefasst werden.__
 
 _Setze die Fragmente in eine Methode, deren Namen den Zweck kennzeichnet._
 
 ```Java
 void printOwing() {
-  printBanner();
+	printBanner();
  
 	//print details
 	System.out.println ("name:	" + _name);
@@ -649,7 +649,7 @@ _↓_
 
 ```Java
 void printOwing() {
-  printBanner();
+	printBanner();
 	printDetails(getOutstanding());
 }
  
@@ -659,7 +659,7 @@ void printDetails (double outstanding) {
 }
 ```
 
-#### Verschiebe Methode / Move Method [ref](https://forum.itm09.at/wiki/Software_Design/Refactoring_Katalog#cite_note-9)
+#### Verschiebe Methode / Move Method [[ref](http://www.refactoring.com/catalog/moveMethod.html)]
 __Eine Methode wird von einer anderen Klasse mehr verwendet als von der definierenden Klasse.__
 
 _Erzeuge eine Methode mit ähnlichem Rumpf in der Klasse, die die Eigenschaft am meisten nutzt. Delegiere in der alten Methode an die neue Implementierung, oder lösche sie._
@@ -700,4 +700,37 @@ class Person {
 }
  
 ... if (p.participate(x)) ...
+```
+
+#### Ersetze temporäre Variable durch Abfrage / Replace Temp with Query [[ref](http://www.refactoring.com/catalog/replaceTempWithQuery.html)]
+__Stelle den Ausdruck in eine Abfrage-Methode. Ersetze die temporäre Variable durch Aufrufe der Methode.__
+
+_Eine temporäre Variable speichert das Ergebnis eines Ausdrucks._
+
+Warum?
+* Die Berechnung kommt u. U. in mehreren Methoden vor → Code-Duplikation
+* Einführung einer Abfrage-Methode beseitigt Duplikation
+* Lokale Variablen provozieren lange Methoden → Variable nur innerhalb der Methode zugreifbar
+
+```Java
+double basePrice = _quantity * _itemPrice;
+if (basePrice > 1000)
+	return basePrice * 0.95;
+else
+	return basePrice * 0.98;
+```
+
+_↓_
+
+```Java
+	if (basePrice() > 1000)
+		return basePrice() * 0.95;
+	else
+		return basePrice() * 0.98;
+ 
+// ....
+ 
+double basePrice() {
+	return _quantity * _itemPrice;
+}
 ```
