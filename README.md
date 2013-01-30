@@ -268,7 +268,7 @@ private:
     Node *root;
 };
 ```
-[Btree.h](https://github.com/Fleshgrinder/Praktische_Informatik/blob/master/uebung1/aufgabe3/Btree.h)
+![github-icon](https://github.com/favicon.ico) [ Btree.h](https://github.com/Fleshgrinder/Praktische_Informatik/blob/master/uebung1/aufgabe3/Btree.h)
 
 ## AVL-Bäume
 [__AVL-Bäume__](https://de.wikipedia.org/wiki/AVL-Baum) sind Binärbäume die sicherstellen, dass es zu keiner Degenerierung kommt. Es gibt verschiedene Varianten von AVL-Bäumen, z. B. [Red-Black Baum](https://de.wikipedia.org/wiki/Rot-Schwarz-Baum), [2-3-4-Baum](https://de.wikipedia.org/wiki/2-3-4-Baum), uvm.. Damit ein Binärbaum balanziert ist, darf sich die Höhe eines Knotens ausschließlich 0, 1, oder −1 betragen. Bei einem AVL-Baum bleibt das Suchen gleich wie beim Binärbaum. Einfüge- und Löschoperationen ändern sich jedoch, da sichergestellt werden muss, dass der Binärbaum zu jeder Zeit ausbalanciert ist.
@@ -330,4 +330,196 @@ void insert(AvlNode* &node, double d) {
     delete [] node;
 }
 ```
-[Gesamter Code: AvlTree.h](https://github.com/Fleshgrinder/Praktische_Informatik/blob/master/uebung1/aufgabe3/AvlTree.h)
+![github-icon](https://github.com/favicon.ico) [ Gesamter Code: AvlTree.h](https://github.com/Fleshgrinder/Praktische_Informatik/blob/master/uebung1/aufgabe3/AvlTree.h)
+
+## Speicherhierarchie
+* _Massenspeicher:_ langsam, billig, nicht flüchtig [TB]
+* _Hauptspeicher:_ flüchtig [GB]
+* _Cache:_ flüchtig [KB]
+* _Register:_ schnell, teuer, flüchtig [B]
+
+| Level         | Zugriffszeit      | Typische Größe | Technologie |
+| ------------- | -----------------:| --------------:| ----------- |
+| Register      | 1 Zyklus (1 ns)   | <1 KB          | CMOS        |
+| L1 Cache      | ~5 Zyklen         | ~32 KB         | SRAM        |
+| L2 Cache      | ~20 Zyklen        | ~256 KB        | SRAM        |
+| L3 Cache      | ~50 Zyklen        | <3 MB          | SRAM        |
+| Hauptspeicher | ~300 Zyklen       | GB             | DRAM        |
+| Festplatte    | 10.000.000 Zyklen | TB             | Magnetisch  |
+
+Caching ist ein Verfahren, das Daten zwischenspeichert um sie bei wiederholtem Zugriff schneller liefern zu können. Caching ist für den Benutzer transparent, allerdings beeinflusst die Datenorganisation die Ausführungsgeschwindigkeit erheblich.
+
+### Wichtige Konzepte und Begriffe
+#### Caching
+* __Spatial Locality__: weitere Zugriffe in der Nähe wahrscheinlich
+* __Temporal Locality__: weitere Zugriffe in naher Zukunft wahrscheinlich
+* __Cache Hit / Miss__: benötigtes Datum kann im Cache gefunden werden / oder nicht
+* __Latency__: Zeit um das Datum eines Blocks (__cache line__) zu holen; __bandwidth__ bestimmt die Dauer des weiteren Ladevorgangs
+
+##### Fragen zu Caches
+* Wo wird ein Block im Cache gespeichert?
+  * __direct mapped__, __fully associative__, __set associative__
+* Wir wird ein Block im Cache gefunden?
+  * __cache tag__
+* Welcher Block wird bei einem __cache miss__ ersetzt?
+  * __random__, __least-recently used__ (LRU), __first in / first out__ (FIFO)
+* Was passiert bei einem Schreibzugriff?
+  * __write back__, __write through__
+
+#### Virtual Memory
+* Adressraum wird in Blöcke gleicher Größe unterteilt: __pages__
+* Zugriffe auf Blöcke, die nicht im physikalischen Speicher sind, erzeugen __page faults__, die vom Betriebssystem behandelt werden können
+* Memory Management Unit (MMU)
+
+![MMU](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+
+##### Fragen zu Virtual Memory
+* Wo kann eine __page__ in den Hauptspeicher geladen werden?
+* Wie wird eine __page__ im Hauptspeicher gefunden?
+  * __page table__, __translation lookaside buffer__ (TLB)
+* Welcher Block soll ersetzt werden wenn der Hauptspeicher voll ist?
+* Was passiert wenn ein Block beschrieben wird?
+* 
+#### Virtuelle Adressen / Paging
+Virtuelle Adressräume sind in Seiten (__pages__) eingeteilt und physikalischer Speicher in __page frames__. Typische Seitengröße ist 4 KB, typische Adressräume sind 4 GB (x86) bzw. 256 TB (x64).
+
+![Virtuelle Adressen](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+
+##### Fragen zu virutellen Adressen / Paging
+* Was passiert bei Zugriff auf eine Seite, die nicht im Speicher ist?
+* Was passiert bei Zugriff auf eine Seite ohne entsprechende Berechtigung (__write__, __execute__)?
+* Wie kann das Betriebssystem mehr Speicher anbieten als physikalisch vorhanden ist?
+
+![Paging](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+
+### Fully associative cache
+Cache ist in __cache lines__ organisiert, es werden immer ganze __cache lines__ transferiert. Ein 4 MB L2 Cache hat also Platz für 65.536 __cache lines__. Für jede __cache line__ gibt es einen __tag__ der bestimmt welches Datum in einer __cache line__ gespeicher ist.
+
+```
+32-bit address = 2^5 offset
+
+|---------------------------|-----|
+|            27bit          | 5bit|
+|---------------------------|-----|
+              tag            offset
+
+4 MB / 64 B = 65536 cache lines
+
+                                    64 Bytes Cache Lines
+    0 |---------------------------|---------
+      |             tag           |  line
+      |---------------------------|---------
+      |             tag           |  line
+      |---------------------------|---------
+      ⋮                           ⋮
+
+      ⋮                           ⋮
+      |---------------------------|---------
+      |             tag           |  line
+      |---------------------------|---------
+      |             tag           |  line
+65535 |---------------------------|---------
+```
+
+### Direct mapped cache
+Große voll assoziative Caches sind nicht praktikabel, da alle __tags__ abgesucht werden müssen, das ist einfach zu langsam. __Direct mapped__ ist eine Caching-Variante die das Problem durch Unterteilung in Untergruppen (sogenannte __sets__) versucht zu lösen.
+
+```
+32-bit address = 2^5 offset
+
+|-----------|----------------|-----|
+|   11bit   |      16bit     | 5bit|
+|-----------|----------------|-----|
+     tag           index      offset
+
+
+                                    64 Bytes Cache Lines
+    0 |---------------------------|---------
+      |             tag           |  line
+      |---------------------------|---------
+      |             tag           |  line
+      |---------------------------|---------
+      ⋮                           ⋮
+
+      ⋮                           ⋮
+      |---------------------------|---------
+      |             tag           |  line
+      |---------------------------|---------
+      |             tag           |  line
+65535 |---------------------------|---------
+```
+
+### Set associative cache
+Eine praktikable Mischung beider Varianten ist ein __set associative__ Cache. In jedem __set__ gibt es eine vorbestimmt Anzahl an __tags__ die durchsucht werden müssen.
+
+```
+offset:       64bit = 2^6 = 6bit
+cache lines:  256 KB / 64 B = 4096
+index:        4096 / 8 = 512 = 2^9 = 9bit
+tag:          64 - 6 - 9 = 49bit
+
+|-------------------------------------------------|---------|------|
+|                      49bit                      |   9bit  | 6bit |
+|-------------------------------------------------|---------|------|
+                        tag                          index   offset
+
+Aussehen:
+                           8-fach assoziativ -->
+  0 |------|------|---     |------------|------------|---
+    | set0 | set1 |        |    set0    |    set1    |   
+    |------|------|---     |------------|------------|---
+    | set0 | set1 |        |    set0    |    set1    |   
+    |------|------|---     |------------|------------|---
+    |      |      |        |            |            |   
+
+
+    |      |      |        |            |            |   
+    |------|------|---     |------------|------------|---
+    | set0 | set1 |        |    set0    |    set1    |   
+511 |------|------|---     |------------|------------|---
+      18bit   18bit            64Bytes      64Bytes
+```
+![github-icon](https://github.com/favicon.ico) [ Übung 3 Aufgabe 6](https://github.com/Fleshgrinder/Praktische_Informatik/tree/master/uebung3/6)
+
+### Rechenbeispiel
+* 32-bit Adressraum
+* 2-fach assoziativ
+* 32 KB großer Cache
+* 32 Byte Cache Lines
+* Berechne:
+  * tag bits
+  * offset bits
+  * cache indices
+  * cache lines im cache
+  * Wie sieht der Cache aus?
+
+```
+offset:       32-bit address = 2^5 = 5bit
+cache lines:  32 KB / 32 B = 1024
+index:        1024 / 2 = 512 = 2^9 = 9bit
+tag:          32 - 5 - 9 = 18bit
+
+|------------------|---------|-----|
+| 18bit            | 9bit    | 5bit|
+|------------------|---------|-----|
+ tag                index     offset
+
+Aussehen:
+                           2-fach assoziativ
+  0 |------|------|---     |------------|------------|
+    | set0 | set1 |        |    set0    |    set1    |   
+    |------|------|---     |------------|------------|
+    | set0 | set1 |        |    set0    |    set1    |   
+    |------|------|---     |------------|------------|
+    |      |      |        |            |            |   
+
+
+    |      |      |        |            |            |   
+    |------|------|---     |------------|------------|
+    | set0 | set1 |        |    set0    |    set1    |   
+511 |------|------|---     |------------|------------|
+     18bit  18bit             64Bytes      64Bytes
+```
+
+### Instruction Trace
+_Brauchen wir das?_
