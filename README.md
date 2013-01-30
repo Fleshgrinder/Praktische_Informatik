@@ -586,3 +586,118 @@ _Refactoring_ bedeutet die interne Struktur einer Software zu optimieren und zu 
 * Wenn Code stinkt muss Refactoring angewendet werden!
 
 ### Exkurs: Tests
+* Tests sollen …
+  * schnell ablaufen (wenige Sekunden)
+  * ein eindeutiges Ergebnis liefern (Ja / Nein, Korrekt / Fehler)
+  * einfach aufzurufen sein
+  * automatisch ablaufen
+  * Codeteile separat prüfen (Unit Tests)
+  * bereits während der Entwicklung berücksichtigt werden
+  * Randbedingungen mit erfassen, z. B.:
+    * was passiert bei Eingabe einer leeren Zeichenkette?
+    * was passiert wenn das erste / letzte Element gelöscht wird?
+  * eine größtmögliche Überdeckung (test coverage) aufweisen; besser einige wenige (wichtige) Tests als viele Kleine
+  * Unit Tests sind auch grundlage für Laufzeitoptimierung:
+    * Optimierung ähnlich zu Refactoring; Ziel ist die Verbesserung der Performance
+    * Optimierungen ändern die interne Struktur und die Ausführungszeit
+* _Unit Tests:_ überprüfen einen kleinen Codeteil
+* _Functional Tests:_ überprüfen ob das Programm im Gesamten das macht was es soll
+* Es existieren Frameworks und Werkzeuge um Tests zu organisieren (z. B. JUnit für Java)
+* _Black Box Tests:_
+  * Testfälle basieren auf Spezifikation
+  * Testfälle können ohne Entwickler erstellt werden
+  * Interna unbekannt
+* _White Box Tests:_
+  * Testfälle basieren auf Struktur (des Codes)
+  * Testfälle werden vom Entwickler erstellt
+  * Testüberdeckung wird anhand des Codes ermittelt
+  * Ziel ist alle Anweisungen, Bedingungen und Pfade mindestens einmal ausgeführt zu haben
+  * Analyse des Kontrollflussgraphen zur Überprüfung
+  * Verschiedene Anforderungen an Überdeckung:
+    * C0 … Anweisungsüberdeckung / Statement Coverage
+      * Testfälle werden so gewählt, dass alle Anweisungen (Statements) zumindest einmal ausgeführt werden
+    * C1 … Zweigüberdeckung / Branch Coverage
+      * Testfälle werden so gewählt, dass alle Kanten des Kontrollflussgraphen einmal ausgeführt werden
+    * …
+
+![Kontrollflussgraph](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/kontrollflussgraph.png)
+
+### Fortsetzung: Refactoring
+Vorgehen:
+1. Testfälle vorhanden? Falls nicht, erstellen!
+2. Kleine Änderungen vornehmen – Refactoringkatalog beachten
+3. Testen
+4. Ziel erreicht oder ab Schritt 2 Prozedere wiederholen
+
+### Refactoringkatalog (Auswahl)
+#### Methode extrahieren / Extract Method [ref](http://www.refactoring.com/catalog/extractMethod.html)
+__Ein Codefragment kann zusammengefasst werden.__
+
+_Setze die Fragmente in eine Methode, deren Namen den Zweck kennzeichnet._
+
+```Java
+void printOwing() {
+  printBanner();
+ 
+	//print details
+	System.out.println ("name:	" + _name);
+	System.out.println ("amount	" + getOutstanding());
+}
+```
+
+_↓_
+
+```Java
+void printOwing() {
+  printBanner();
+	printDetails(getOutstanding());
+}
+ 
+void printDetails (double outstanding) {
+	System.out.println ("name:	" + _name);
+	System.out.println ("amount	" + outstanding);
+}
+```
+
+#### Verschiebe Methode / Move Method [ref](https://forum.itm09.at/wiki/Software_Design/Refactoring_Katalog#cite_note-9)
+__Eine Methode wird von einer anderen Klasse mehr verwendet als von der definierenden Klasse.__
+
+_Erzeuge eine Methode mit ähnlichem Rumpf in der Klasse, die die Eigenschaft am meisten nutzt. Delegiere in der alten Methode an die neue Implementierung, oder lösche sie._
+
+![Move Method](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/move-method.gif)
+
+```Java
+class Project {
+  Person[] participants;
+}
+ 
+class Person {
+	int id;
+	boolean participate(Project p) {
+		for(int i=0; i<p.participants.length; i++) {
+			if (p.participants[i].id == id) return(true);
+		}
+		return(false);
+	}   
+}
+ 
+... if (x.participate(p)) ...
+ 
+ 
+Nach der Verschiebung folgt:
+	class Project {
+	Person[] participants;
+	boolean participate(Person x) {
+		for(int i=0; i<participants.length; i++) {
+			if (participants[i].id == x.id) return(true);
+		}
+		return(false);
+	}   
+}
+ 
+class Person {
+	int id;
+}
+ 
+... if (p.participate(x)) ...
+```
