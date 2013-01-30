@@ -1,0 +1,55 @@
+Fränk, Wolfi, Katrin
+
+# Notizen
+
+## Funktion
+Level-Generierung nicht probabilistisch laut Angabe (keine Bins)
+
+## Lösungsweg
+Insert -> search über skiplist, wenn Element nicht vorhanden -> Komplexität n
+Destruktor rekursiv
+random() ohne srandom()
+rand() und random() gemischt
+Test: Double Variable erhält float Wert durch Cast
+
+
+## Dokumentation
+inkosistente Kommentarbenutzung, 
+generell zu wenig Kommentare
+
+## Präsentation
+Test: Ausgabe ist unverständlich
+Einrückungen + Linebreaks + Leerzeichen willkürlich
+{} inkosistent
+Deklaration + Initialisierung inkonsistent
+Falsche Verwendung von Annotations
+
+
+# Fragen
+
+## Funktion
+1. Lauffähig? Ja
+2. Testfälle? 1 Testfall, Ausgabe unverständlich, Coverage?
+3. Falsche Lösung? Nein
+4. Mängel? Vergleich nicht korrekt, da Magic number im head (Test auf unsigned)
+5. Aufgabenstellung? Nein, da Levelgenerierung nicht probabilistisch lt. Angabe
+
+## Lösung
+1. Effizient? Search beim Insert (++i statt i++, wegen effizienterer Verarbeitung in der CPU)
+2. Design? OK
+
+## Dokumentation
+1. Kommentare? Nicht aussagekräftig, Stellenweise undokumentiert, teilw. überflüssige Kommentare
+2. Idee? ?
+3. Durchgehend? Nein
+
+## Präsentation
+1. Form? 
+  * Klammerung inkonsistent
+  * Variablennamen, Funktions- und Klassennamen OK
+  * Variablenname 'searchKey' obwohl es ein Value ist
+2. Stilrichtlinien?
+  * Einrückungen OK (IDE richtig konfigurieren)
+  * Anweisungen OK
+  * Falsche Verwendung von 'x' als Variablenname für Objekte
+  * Methodenbenennung, Klassen OK
