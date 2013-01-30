@@ -384,10 +384,11 @@ Caching ist ein Verfahren, das Daten zwischenspeichert um sie bei wiederholtem Z
 ##### Fragen zu Virtual Memory
 * Wo kann eine __page__ in den Hauptspeicher geladen werden?
 * Wie wird eine __page__ im Hauptspeicher gefunden?
-  * __page table__, __translation lookaside buffer__ (TLB)
+  * __page table__
+  * __Translation lookaside buffer__ (TLB): Cache zur Adressumwandlung
 * Welcher Block soll ersetzt werden wenn der Hauptspeicher voll ist?
 * Was passiert wenn ein Block beschrieben wird?
-* 
+
 #### Virtuelle Adressen / Paging
 Virtuelle Adressräume sind in Seiten (__pages__) eingeteilt und physikalischer Speicher in __page frames__. Typische Seitengröße ist 4 KB, typische Adressräume sind 4 GB (x86) bzw. 256 TB (x64).
 
@@ -395,10 +396,16 @@ Virtuelle Adressräume sind in Seiten (__pages__) eingeteilt und physikalischer 
 
 ##### Fragen zu virutellen Adressen / Paging
 * Was passiert bei Zugriff auf eine Seite, die nicht im Speicher ist?
-* Was passiert bei Zugriff auf eine Seite ohne entsprechende Berechtigung (__write__, __execute__)?
+* Was passiert bei Zugriff auf eine Seite ohne entsprechende Berechtigung (write, execute)?
 * Wie kann das Betriebssystem mehr Speicher anbieten als physikalisch vorhanden ist?
 
 ![Paging](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+
+##### Mehrstufige Seitentabellen
+Jeder Prozess besitzt sein eigenes __page directory__. Das Betriebssystem kümmert sich bei Prozesswechsel, dass Register neu geladen werden.
+
+##### Page Faults / Seitenfehler
+Wenn beim Zugriff auf eine Seite ein Fehler auftritt kann das Betriebssystem eingreifen um den Zugriff abzulehnen oder Paging einzuleiten (die Seite auslagern). Dazu muss das Betriebssystem wenig benutzte physikalische Speicher-Frames suchen, den Inhalt gegebenenfalls sichern, die Seite in den Frame laden, Abbildungstabelle anpassen und den Befehl nochmals ausführen.
 
 ### Fully associative cache
 Cache ist in __cache lines__ organisiert, es werden immer ganze __cache lines__ transferiert. Ein 4 MB L2 Cache hat also Platz für 65.536 __cache lines__. Für jede __cache line__ gibt es einen __tag__ der bestimmt welches Datum in einer __cache line__ gespeicher ist.
@@ -531,3 +538,5 @@ Aussehen:
 
 ### Instruction Trace
 _Brauchen wir das?_
+
+### 
