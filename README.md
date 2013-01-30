@@ -202,7 +202,11 @@ function node_weight(node) {
 }
 ```
 
-![Binärbaum-Gewichtung](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
+![Binärbaum-Gewichtung](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/binary-tree-weight.png)
+
+* −1 … linkslastig
+* 0 … ausbalanciert
+* 1 … rechtslastig
 
 ### Implementierung
 ```Cpp
