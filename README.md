@@ -200,79 +200,134 @@ function node_weight(node) {
 
 ![Binärbaum-Gewichtung](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
 
-### Funktionen
+### Implementierung
 ```Cpp
-class BinaryTree {
+/*
+* File: Btree.h
+* Author: Richard Fussenegger
+*
+* Created on October 30, 2012, 5:20 PM
+*/
+
+#include <stdio.h>
+
+using namespace std;
+
+class Btree {
 public:
-  /**
-   * Constructor
-   */
-  BinaryTree() : root(0) { /* Do nothing */ }
 
-  /**
-   * Public insert method
-   */
-  void insert(double data) {
-    if (!root) {
-      root = new Node(data);
-    }
-    else {
-      this.insert(root, data);
-    }
-  }
+    Btree() : root(0) {}
 
-  /**
-   * Public print method
-   */
-  void print() const {
-    this.print(root);
-  }
+    ~Btree() {
+        delete this->root;
+    }
+
+    void insert(double d) {
+        if (!this->root) this->root = new Node(d);
+        else this->insert(this->root, d);
+    }
+
+    unsigned height() {
+        return this->height(this->root);
+    }
+
+    void print() const {
+        print(this->root);
+    }
+
 private:
-  /**
-   * Inline class node structure
-   */
-  struct Node {
-    // Constructor
-    Node(double data) : data(data), left(0), right(0) { /* Do nothing */ }
-    double data;
-    // Pointer to the left and right child nodes
-    Node *left, *right;
-  }
 
-  /**
-   * The root node of this binary tree instance
-   */
-  Node *root;
+    struct Node {
+        Node(double d) : data(d), left(0), right(0) {}
+        ~Node() {
+            delete this->left;
+            delete this->right;
+        }
+        double data;
+        Node *left, *right;
+    };
 
-  /**
-   * Print each node to the console
-   */
-  void print(Node *node) const {
-    if (!node) return;
-    this.print(node->left);
-    printf("%.2f (%d)\n", node->data, height(node));
-    this.print(node->right);
-  }
-
-  /**
-   * Get the height of this node
-   */
-  unsigned height(Node *node) const {
-    if (!node) return 0;
-    return 1 + max(height(node->left), height(node->right));
-  }
-
-  /**
-   * Insert new element
-   */
-  void insert(Node* &node, double data) {
-    if (!node) node = new Node(data);
-    if (data < node->data) {
-      this.insert(node->left, data);
+    void print(Node *node) const {
+        if (!node) return;
+        print(node->left);
+        printf("%.2f (%d)\n", node->data, this->height(node));
+        print(node->right);
     }
-    else if (data > node->data) {
-      this.insert(node->right, data);
+
+    unsigned height(Node *node) const {
+        if (!node) return 0;
+        return 1 + max(this->height(node->left), this->height(node->right));
     }
-  }
+
+    void insert(Node* &node, double d) {
+        if (!node) node = new Node(d);
+        if (d < node->data) this->insert(node->left, d);
+        else if (d > node->data) this->insert(node->right, d);
+    }
+
+    Node *root;
 };
 ```
+[Btree.h](https://github.com/Fleshgrinder/Praktische_Informatik/blob/master/uebung1/aufgabe3/Btree.h)
+
+## AVL-Bäume
+[__AVL-Bäume__](https://de.wikipedia.org/wiki/AVL-Baum) sind Binärbäume die sicherstellen, dass es zu keiner Degenerierung kommt. Es gibt verschiedene Varianten von AVL-Bäumen, z. B. [Red-Black Baum](https://de.wikipedia.org/wiki/Rot-Schwarz-Baum), [2-3-4-Baum](https://de.wikipedia.org/wiki/2-3-4-Baum), uvm.. Damit ein Binärbaum balanziert ist, darf sich die Höhe eines Knotens ausschließlich 0, 1, oder −1 betragen. Bei einem AVL-Baum bleibt das Suchen gleich wie beim Binärbaum. Einfüge- und Löschoperationen ändern sich jedoch, da sichergestellt werden muss, dass der Binärbaum zu jeder Zeit ausbalanciert ist.
+
+### Einfügen
+1. Neuer Knoten wird wie in einem normalen Binärbaum eingefügt.
+2. Nun muss die Balance kontrolliert werden, es wird zwischen zwei Fällen unterschieden:
+  1. Wenn das neue Blatt die Höhe des rechten Teilbaumes eines Knotens erhöht, der bereits rechtslasting war.
+  2. Wenn das neue Blatt die Höhe des linken Teilbaumes eines Knotens erhöht, der bereits linkslastig war.
+
+### Ausbalancieren
+Ausbalancieren ist in konstanter Zeit möglich – also O(1) – und das Gewicht des Knotens wird auf 0 zurückgesetzt.
+
+Eine Visualisierung des Ausbalancierens könnt ihr euch auf folgender Website ansehen (JavaScript wird benötigt): http://www.cs.usfca.edu/~galles/visualization/AVLtree.html
+
+### Änderungen in der Implmentierung
+Lediglich die `insert()`-Methode muss angepasst werden und Methoden für das Ausbalancieren müssen implementiert werden.
+
+```Cpp
+void rotateRight(AvlNode* &node) {
+    AvlNode *tmp = node->left;
+    node->left = tmp->right;
+    tmp->right = node;
+    node = tmp;
+}
+
+void rotateRightLeft(AvlNode* &node) {
+    this->rotateRight(node->right);
+    this->rotateLeft(node);
+}
+
+void rotateLeft(AvlNode* &node) {
+    AvlNode *tmp = node->right;
+    node->right = tmp->left;
+    tmp->left = node;
+    node = tmp;
+}
+
+void rotateLeftRight(AvlNode* &node) {
+    this->rotateLeft(node->left);
+    this->rotateRight(node);
+}
+
+void insert(AvlNode* &node, double d) {
+    if (!node) node = new AvlNode(d);
+    if (d < node->data) {
+        this->insert(node->left, d);
+        if (this->height(node->left) - this->height(node->right) == 2) {
+            if (d < node->left->data) rotateRight(node);
+            else rotateLeftRight(node);
+        }
+    } else if (d > node->data) {
+        this->insert(node->right, d);
+        if (this->height(node->right) - this->height(node->left) == 2) {
+            if (d > node->right->data) rotateLeft(node);
+            else rotateRightLeft(node);
+        }
+    }
+    delete [] node;
+}
+```
+[Gesamter Code: AvlTree.h](https://github.com/Fleshgrinder/Praktische_Informatik/blob/master/uebung1/aufgabe3/AvlTree.h)
