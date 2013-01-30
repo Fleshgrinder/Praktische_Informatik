@@ -577,3 +577,12 @@ Kommandozeilentools: `ipcs`, `ipcrm`
 Bindet Dateien in den Speicher ein: `mmap()`, `munmap()`, `CreateFileMapping()` (Windows)
 
 ## Refactoring
+_Refactoring_ bedeutet die interne Struktur einer Software zu optimieren und zu verbessern ohne das externe Verhalten zu verändern. Refactoring wird dazu eingesetzt, um das Design einer Software zu optimieren und den stetigen Zerfall von Software entgegen zu wirken.
+
+### Prinzipien
+* Wenn eine Funktion einem Programm nicht hinzugefügt werden kann, weil das Design der Software dies nicht zulässt. Dann wird zuerst das Design geändert bis dies möglich ist und erst dann wird die Funktion hinzugefügt.
+* Bevor mit Refactoring begonnen werden kann, sollte es eine solide Basis an Tests für die Software geben.
+* Refactoring verändert das Programm in kleinen Schritten.
+* Wenn Code stinkt muss Refactoring angewendet werden!
+
+### Exkurs: Tests
