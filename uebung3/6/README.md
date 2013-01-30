@@ -7,18 +7,21 @@ Berechnen Sie unter Annahme von 64-bit Adressen die folgenden Werte für einen 8
 
 ## Lösung
 
-Der Offset ergibt sich aus der Art der Adressen. 32-bit Adressen lassen sich mit 5 bit (2⁵ = 32) repräsentieren, 64-bit Adressen mit 6 bit (2⁶ = 64).
+Der Offset ergibt sich aus der Art der Adressen.
 
 ```
-|-------------------------------------------------|---------|------|
-|                      49bit                      |   9bit  | 6bit |
-|-------------------------------------------------|---------|------|
-                        tag                           index   offset
-
-256 KB / 64 B = 4096 cache lines
+64 B = 2^6 offset
 
 4096 / 8 (assoc) = 512 = 2^9 index
 
+64 - 6 - 9 = 49 tag
+
+|-------------------------------------------------|---------|------|
+|                      49bit                      |   9bit  | 6bit |
+|-------------------------------------------------|---------|------|
+                        tag                          index   offset
+
+256 KB / 64 B = 4096 cache lines
 
 Aussehen:
                            8-fach assoziativ -->
