@@ -885,3 +885,221 @@ public class HowToUseFactory {
 }
 ```
 
+#### C++-Beispiel aus dem Unterricht
+##### Das Problem
+Die `DocumentManager`-Klasse führt eine Liste aller offener Dokumente, das Erzeugen eines Dokuments foll auch in der Verantwortung des Managers liegen.
+
+```Cpp
+class DocumentManager {
+public:
+	Document *newDocument();
+	virtual Document* CreateDocument() = 0; // Factory method, type unknown!
+private:
+	std::list<Document *> listOfDocuments;
+};
+```
+
+Verwendung:
+```Cpp
+Document* DocumentManager::newDocument() {
+	Document *p = CreateDocument();
+	listOfDocuments.push_back(p);
+	return p;
+}
+```
+
+Verwendung mit konkretem Typ:
+```Cpp
+Document *GraphicDocumentManager::CreateDocument() {
+	return new GraphicDocument;
+}
+```
+
+_Neues Problem:_ wir wollen ein Dokument aus einer Datei erzeugen, der folgende Code ist jedoch kein valider C++-Code.
+```Cpp
+Class Read(const char *filename);
+
+Document *DocumentManager::OpenDocument(const char *filename) {
+	Class theClass = Read(filename);
+	Document *p = new theClass;
+	p->read(filename);
+	return p;
+}
+```
+Beim Instanzieren von Objekten (`new`) muss in C++ _immer_ der konkrete Typ einer Klasse angegeben werden. C++ besitzt keinen Typ `Class` (oder `Object`) von dem alle ableiten.
+
+##### Die Lösung
+Wir erstellen eine abstrakte Klasse `Shape` von der konkrete Implementierungen (z. B. `Circle` oder `Rectangle`) ableiten:
+```Cpp
+class Shape {
+public:
+	virtual void draw() const = 0;
+	virtual void rotate(double angle) = 0;
+	virtual void zoom(double zoomFactor) = 0;
+};
+```
+
+Die Klasse `Drawing` verwaltet eine Sammlung von `Shape`-Objekten:
+```Cpp
+class Drawing {
+public:
+	void save(std::ofstream &output);
+	void load(std::ifstream &input);
+private:
+	// Some container of shapes
+};
+```
+
+Das Speichern einer Zeichnung ist einfach:
+```Cpp
+void Drawing::Save(std::ofstream &output) {
+	for (each element in drawing) {
+		(current element)->save(output);
+	}
+}
+```
+
+Das Laden stellt die größere Herausforderung dar, da nicht bekannt ist um was für einen Typ es sich handelt:
+```Cpp
+const int LINE = 1, CIRCLE = 2, ...
+
+void Drawing::Load(std::ifstream &input) {
+	while (input) {
+		int shapeType;
+		input >> shapeType; // Read object (shape) type.
+		Shape *currentObject;
+		switch (shapeType) {
+			case LINE:
+				currentObject = new Line;
+				break;
+			case CIRCLE:
+				currentObject = new Circle;
+				break;
+			...
+		}
+		currentObject->read(input);
+		// Add object (shape) to container.
+	}
+}
+```
+
+Diese Implementierung ist jedoch schlecht und stinkt! Wir haben ein `switch` über verschiedene Typen, alls `Shape`-Unterklassen müssen in `Drawing` bekannt sein und das Ganze ist nur schwer erweiterbar (eindeutiger, neuer Typ wird benötigt und die `Load`-Methode muss erweitert werden). Das `switch` soll verschwinden und dafür erstellen wir eine Factory-Klasse die zu einer ID einen Pointer auf eine Funktion speichert, die das gewünschte Objekt zurückliefert.
+```Cpp
+|----------|----------|
+| LINE     |          |  ---------->  Shape *CreateLine() { return new Line; }
+|----------|----------|
+| CIRCLE   |          |  ---------->  Shape *CreateCircle() { return new Circle; }
+|----------|----------|
+⋮          ⋮          ⋮
+```
+
+Die Implementierung könnte aussehen wie folgt:
+```Cpp
+class ShapeFactory {
+public:
+	typedef Shape* (*CreateShapeCallback) ();
+	/**
+	 * @return true if the registration was successful
+	 */
+	bool registerShape(int shapeId, CreateShapeCallback createFn);
+	/**
+	 * @return true if shapeId was registered before
+	 */
+	bool unregisterShape(int shapeId);
+	Shape *createShape(int shapeId);
+private:
+	typedef std::map<int, CreateShapeCallback> CallbackMap;
+	CallbackMap callbacks;
+};
+```
+
+Um nun eine konkrete `Shape`-Implementierung unserer `ShapeFactory` hinzuzufügen könnten wir etwas wie das folgende machen:
+```Cpp
+namespace {
+	Shape *CreateLine() {
+		return new Line;
+	}
+	const int LINE = 1;
+	const bool registered = ShapeFactory.registerShape(LINE, CreateLine);
+}
+```
+
+Die Implementierung der `ShapeFactory`-Methoden könnte wie folgt aussehen:
+```Cpp
+bool ShapeFactory::registerShape(int shapeId, CreateShapeCallback createFn) {
+	return callbacks.insert(CallbackMap::value_type(shapeId, createFn)).second;
+}
+
+bool ShapeFactory::unregisterShape(int shapeId) {
+	return callbacks.erase(shapeId) == 1;
+}
+
+Shape *ShapeFactory::createShape(int shapeId) {
+	CallbackMap::const_iterator it = callbacks.find(shapeId);
+	// Do we know the shape with this ID?
+	if (it == callbacks.end()) {
+		throw std::runtime_error(Unknown Shape ID);
+	}
+	// Invoke the creation function.
+	return (it->second)();
+}
+```
+
+Nun schauen wir uns nochmals das Laden einer Zeichnung an.
+```Cpp
+void Drawing::Load(std::ifstream &input) {
+	while (!input.eof()) {
+		int shapeId;
+		input >> shapeId;
+		Shape *currentShape = ShapeFactory.createShape(shapeId);
+		currentShape->load(input);
+		listOfShapes.push_back(currentShape);
+	}
+}
+```
+
+###### Zusammenfassung
+Neue von `Shape` abgeleitete Klassen können einfach integriert werden. Bestehende Klassen müssen nicht abgeändert werden, die neu hinzugekommene Klasse kann selbst alle nötigen Methoden und Aufrufe implementieren. Trotzdem bleiben ein paar Probleme offen:
+* Die Typ-Identifikatoren müssen irgendwie zentral verwaltet werden (`LINE = 1, CIRCLE = 2, ...`)
+* Die `ShapeFactory`-Klasse ist speziell nur für `Shape`-Klassen (und deren Unterklassen)
+* Es muss auch sichergestellt werden, dass es nur eine `ShapeFactory`-Instanz gibt
+
+Um diese Probleme zu lösen müssen wir weitere Verallgemeinerungen der `ShapeFactory` vornehmen. Wir erstellen also eine ganz allgemeine `ObjectFactory` mit folgenden Elementen:
+* __AbstractObject__ … abstrakte Basisklasse der erzeugten Objekte
+* __IdentifierType__ … identifiziert den Typ des zu erzeugenden Objektes
+* __ObjectCreator__ … Funktion zum erzeugen eines Objektes
+* __ConcreteObject__ … ein erzeugtes Objekt
+
+```Cpp
+template <
+	class AbstractObject,
+	typename IdentifierType,
+	typename ObjectCreator
+> class ObjectFactory {
+public:
+	bool register(const IdentifierType &id, ObjectCreator creator) {
+		return callbacks.insert(CallbackMap::value_type(id, creator)).second;
+	}
+	bool unregister(const IdentifierType &id) {
+		return callbacks.erase(id) == 1;
+	}
+	AbstractObject *createObject(const IdentifierType &id) {
+		typename CallbackMap::const_iterator it = callbacks.find(id);
+		if (it != callbacks.end()) {
+			return (it->second)();
+		}
+		// ERROR!?!
+	}
+private:
+	typedef std::map<IdentifierType, ObjectCreator> CallbackMap;
+	CallbackMap callbacks;
+};
+```
+
+### Policies (C++ spezifisch)
+Bei einer Factory-Implementierung in C++ ergeben sich diverse Probleme aufgrund der Unzulänglichkeiten der Sprache. Was soll passieren wenn der Identifikator eines Objekts unbekannt ist und kein Objekt erzeugt werden kann? Eine allgemeingültige Antwort lässt sich dafür nicht finden, möglich oder sinnvoll wären:
+* 0 / `null`-Pointer zurückgeben?
+* Exception werfen?
+* Programm beenden?
+* Eine dynamische Bibliothek (`dll`, `so`) laden und erneut versuchen?
+Dieser Aspekt einer Klasse kann in eine sogenannte Policy ausgelagert werden.
