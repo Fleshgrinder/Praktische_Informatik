@@ -58,7 +58,7 @@ function parent_index(index) {
 function swap(index1, index2) {
   var tmp = data[index1];
   data[index1] = data[index2];
-  data[index2] = data[index1];
+  data[index2] = tmp;
 }
 
 function push(value) {
@@ -73,12 +73,12 @@ function push(value) {
     // Max-Heap
     if (data[parent_index] < value) {
       swap(current_index, parent_index);
-    }
+    } else break;
 
     // Min-Heap
     if (data[parent_index] > value) {
       swap(current_index, parent_index);
-    }
+    } else break;
 
     current_index = parent_index;
   }
@@ -106,19 +106,19 @@ function pop() {
     var childs = children(current_index);
     if (childs == 0) break;
 
-    var max_index = left_index(index);
+    var max_index = left_index(current_index);
     if (childs == 2 && data[max_index] < data[max_index + 1]) max_index++;
 
     // Max-Heap
-    if (data[index] < data[max_index]) {
-      swap(index, max_index);
-      index = max_index;
+    if (data[current_index] < data[max_index]) {
+      swap(current_index, max_index);
+      current_index = max_index;
     } else break;
 
     // Min-Heap
-    if (data[index] > data[max_index]) {
-      swap(index, max_index);
-      index = max_index;
+    if (data[current_index] > data[max_index]) {
+      swap(current_index, max_index);
+      current_index = max_index;
     } else break;
   } while (true);
 }
@@ -509,9 +509,15 @@ Aussehen:
     |------|------|---     |------------|------------|---
     | set0 | set1 |        |    set0    |    set1    |   
 511 |------|------|---     |------------|------------|---
-      18bit   18bit            64Bytes      64Bytes
+      49bit   49bit            64Bytes      64Bytes
 ```
 ![github-icon](https://github.com/favicon.ico) [ Übung 3 Aufgabe 6](https://github.com/Fleshgrinder/Praktische_Informatik/tree/master/uebung3/6)
+
+### Berechnungsformeln
+* Der _Offset_ ergibt sich aus der Adresslänge (z. B. 32-bit Adressen 5 da 2⁵ = 32 ist)
+* _Cache Lines:_ Cachegröße ÷ Cache-Line-Größe = Cache-Lines
+* _Index:_ Cache-Lines ÷ Assoziativität = Index
+* _Tag:_ Adresslänge − Offset − Index = Tag
 
 ### Rechenbeispiel
 * 32-bit Adressraum
@@ -822,7 +828,7 @@ Es wird ein Interface für die Erstellung von Objekten definiert, die Entscheidu
 * Ein möglicher Nachteil von factory methods ist, dass Anwender die creator-Klasse erweitern (subclassen) müssen, um ein konkretes Produktobjekt zu erzeugen.
 * Factory methods geben einer Subklasse Einhängepunkte (hooks) um eine erweiterte Version eines Objektes zu liefern.
 
-#### Klassendiagram
+#### UML Diagramm
 
 ![Factory Pattern](https://raw.github.com/Fleshgrinder/Praktische_Informatik/master/summary/factory-pattern.jpg)
 
@@ -990,7 +996,7 @@ Diese Implementierung ist jedoch schlecht und stinkt! Wir haben ein `switch` üb
 |----------|----------|
 | CIRCLE   |          |  ---------->  Shape *CreateCircle() { return new Circle; }
 |----------|----------|
-⋮          ⋮          ⋮
+|          |          |
 ```
 
 Die Implementierung könnte aussehen wie folgt:
@@ -1096,10 +1102,136 @@ private:
 };
 ```
 
-### Policies (C++ spezifisch)
-Bei einer Factory-Implementierung in C++ ergeben sich diverse Probleme aufgrund der Unzulänglichkeiten der Sprache. Was soll passieren wenn der Identifikator eines Objekts unbekannt ist und kein Objekt erzeugt werden kann? Eine allgemeingültige Antwort lässt sich dafür nicht finden, möglich oder sinnvoll wären:
-* 0 / `null`-Pointer zurückgeben?
+Was soll jedoch passieren wenn eine ID nicht bekannt ist und kein Objekt erzeugt werden kann? Dafür gibt es keine allgemeingültige Antwort, möglich oder sinnvoll wäre:
+* 0 (`null`-Pointer) zurückgeben?
 * Exception werfen?
 * Programm beenden?
 * Eine dynamische Bibliothek (`dll`, `so`) laden und erneut versuchen?
-Dieser Aspekt einer Klasse kann in eine sogenannte Policy ausgelagert werden.
+
+### Policies
+Das Verhalten kann in sogenannte _Policies_ ausgelagert werden. Die Factory soll alle genannten Fehlerbehandlungen ermöglichen und ein vernünftiges Standardverhalten bereitstellen. Dazu erstellen wir eine `FactoryError`-Policy die eine Methode implementiert: `AbstractObject *unknownType(IdentifierType id)`
+_Policies_ und _Policy Classes_ erlauben es einzelne Aspekte einer Klasse flexibel zu gestalten. Eigenständig bieten diese Klassen nichts sinnvolles an und werden nur in anderen Klassen (sogenannten _Host Classes_) verwendet und integriert. Realisiert werden Policies durch eine Kombination von Templates und Mehrfachvererbung (multiple inheritance). Eine Klasse die Policies implementiert, ist eine Template-Klasse mit vielen Template-Parametern; jeder Template-Parameter entspricht einer Policy. Beim Zerlegen einer Klasse in Policies muss darüber nachgedacht werden, welche Entscheidungen auf mehr als eine Art gelöst werden könnten und ob diese als Policy ausgelagert werden können oder sollen.
+
+#### Beispiele aus der C++ STL
+```Cpp
+// std::priority_queue
+template <
+	class T,
+	class Container = vector<T>,
+	class Compare = less<typename Container::value_type>
+> class priority_queue;
+
+// std::list
+template <
+	class T,
+	class Allocator = allocator<T>
+> class list;
+```
+
+#### `class` Vs. `typename`
+In C++ kann es aufgrund der falschen Verwendung der Schlüsselwörter zu unentscheidbaren Problemen kommen.
+
+Wir hier `T::A` mit `aObj` multipliziert?
+```Cpp
+template <Class T> class Demonstration {
+	void method() {
+		T::A *aObj;
+```
+
+Durch Verwendung von `typename` kann dieses Problem umgangen werden:
+```Cpp
+template <Class T> class Demonstration {
+	void method() {
+		typename T::A *aObj;
+```
+
+#### Generische Factory mit Policy erweitern
+```Cpp
+/**
+ * Default Factory Error Policy
+ */
+template <class IdentifierType, class ObjectType> class DefaultFactoryError {
+public:
+	class Exception : public std::exception {
+	public:
+		Exception(const IdentifierType &id) : unknownId(id) {}
+		virtual const char *what() {
+			return "Unknown object type passed to Factory.";
+		}
+		const IdentifierType &getId() {
+			return unknownId;
+		}
+	}
+protected:
+	static ObjectType *unknownType(const IdentifierType &id) {
+		throw Exception(id);
+	}
+};
+```
+
+```Cpp
+template <
+	class AbstractObject,
+	typename IdentifierType,
+	typename ObjectCreator,
+	template <typename, class> class FactoryErrorPolicy = DefaultFactoryError
+> ObjectFactory : public FactoryErrorPolicy<IdentifierType, AbstractObject> {
+public:
+	bool register(const IdentifierType &id, ObjectCreator creator) {
+		return callbacks.insert(CallbackMap::value_type(id, creator)).second;
+	}
+	bool unregister(const IdentifierType &id) {
+		return callbacks.erase(id) == 1;
+	}
+	AbstractObject *createObject(const IdentifierType &id) {
+		typename CallbackMap::const_iterator it = callbacks.find(id);
+		if (it != callbacks.end()) return (it->second)();
+		return unknownType(id);
+	}
+private:
+	typedef std::map<IdentifierType, ObjectCreator> CallbackMap;
+	CallbackMap callbacks;
+};
+```
+
+```Cpp
+/**
+ * Usage example
+ */
+ObjectFactory<Shape, int> myShapeFactory;
+myShapeFactory.register(POLYGON, createPolygon);
+Shape *shape1 = myShapeFactory.createObject(POLYGON);
+try {
+	Shape *shape2 = myShapeFactory.createObject(666);
+} catch (DefaultFactoryError<int, Shape>::Exception &e) {
+	std::cerr << e.what() << std::endl;
+}
+```
+
+## Creational Pattern: Singleton
+Das __Creational Pattern__ _Singleton_ stellt sicher …
+* … es von einer Klasse nur eine Instanz gibt.
+* … es auf diese eine Instanz nur einen global Zugriffspunkt gibt.
+
+```Cpp
+class Singleton {
+public:
+	static Singleton &Instance();
+	// Other methods
+private:
+	Singleton(); // disable
+	Singleton(const Singleton &); // disable
+	Singleton& operator=(const Singleton &); // disable
+	~Singleton();
+};
+```
+
+Einfachste Implementierung in C++ ist _Meyers Singleton_:
+```Cpp
+Singleton &Singleton::Instance() {
+	static Singleton obj;
+	return obj;
+}
+```
+`obj` wird initialisiert wenn `Instance()` zum ersten Mal aufgerufen wird.
+
