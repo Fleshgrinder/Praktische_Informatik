@@ -424,143 +424,126 @@ Prozesse können sich Seiten teilen (z. B. Programmcode) aber auch Daten sind m�
 
 ![Shared Pages](https://i1.wp.com/a248.e.akamai.net/assets.github.com/images/gravatars/gravatar-org-420.png?ssl=1)
 
+### Formelsammlung
+| Deutsch          | Englisch             | Formel
+| ---------------- | -------------------- | ----
+| Cachegröße       | Cache size           | geg.
+| Cachezeilengröße | Cache line size      | geg.
+| Adresstyp        | Address type         | geg.
+| Assoziativität   | Associativity(level) | geg.
+| Cachezeilen      | Cache lines          | Cachegröße ÷ Cachezeilengröße
+| Offset           | Offset               | log₂(Cachezeilengröße)
+| Index            | Index                | log₂(Cachezeilen ÷ Assoziativität)
+| Tag              | Tag                  | Adresstyp − Index − Offset
+
 ### Fully associative cache
 Cache ist in __cache lines__ organisiert, es werden immer ganze __cache lines__ transferiert. Ein 4 MB L2 Cache hat also Platz für 65.536 __cache lines__. Für jede __cache line__ gibt es einen __tag__ der bestimmt welches Datum in einer __cache line__ gespeicher ist.
 
 ```
-32-bit address = 2^5 offset
+given:
+	size = 256 B
+	cache line size = 64 B
+	address type = 16 bit
 
-|---------------------------|-----|
-|            27bit          | 5bit|
-|---------------------------|-----|
-              tag            offset
+calculate:
+	cache lines = 256 B / 64 B = 4 count
+	offset = log2(4) = 2^2 = 2 bit
+	tag = 16 bit - 2 bit = 14 bit
 
-4 MB / 64 B = 65536 cache lines
+15                0
+|---------------|--|
+|               |  |
+|---------------|--|
+       tag       offset
 
-                                    64 Bytes Cache Lines
-    0 |---------------------------|---------
-      |             tag           |  line
-      |---------------------------|---------
-      |             tag           |  line
-      |---------------------------|---------
-      ⋮                           ⋮
-
-      ⋮                           ⋮
-      |---------------------------|---------
-      |             tag           |  line
-      |---------------------------|---------
-      |             tag           |  line
-65535 |---------------------------|---------
+|--------------------------------|--------------------------------|--------------------------------|--------------------------------|
+| cache line (64 B)              | cache line (64 B)              | cache line (64 B)              | cache line (64 B)              |
+|--------------------------------|--------------------------------|--------------------------------|--------------------------------|
 ```
 
 ### Direct mapped cache
 Große voll assoziative Caches sind nicht praktikabel, da alle __tags__ abgesucht werden müssen, das ist einfach zu langsam. __Direct mapped__ ist eine Caching-Variante die das Problem durch Unterteilung in Untergruppen (sogenannte __sets__) versucht zu lösen.
 
 ```
-32-bit address = 2^5 offset
+given:
+	size = 256 B
+	cache line size = 64 B
+	address type = 16 bit
 
-|-----------|----------------|-----|
-|   11bit   |      16bit     | 5bit|
-|-----------|----------------|-----|
-     tag           index      offset
+calculate:
+	cache lines = 256 B / 64 B = 4 count
+	offset = log2(4) = 2^2 = 2 bit
+	index = log2(4 / 1) = 2^2 = 2 bit
+	tag = 16 - 2 - 2 = 12 bit
 
+   15                      4 3  2 1  0
+   |------------------------|----|----|
+   |                        |    |    |
+   |------------------------|----|----|
+    tag                     index offset
 
-                                    64 Bytes Cache Lines
-    0 |---------------------------|---------
-      |             tag           |  line
-      |---------------------------|---------
-      |             tag           |  line
-      |---------------------------|---------
-      ⋮                           ⋮
-
-      ⋮                           ⋮
-      |---------------------------|---------
-      |             tag           |  line
-      |---------------------------|---------
-      |             tag           |  line
-65535 |---------------------------|---------
+index
+      |--------------------------------|
+  00  | cache line (64 B)              |
+      |--------------------------------|
+  01  | cache line (64 B)              |
+	    |--------------------------------|
+  10  | cache line (64 B)              |
+      |--------------------------------|
+  11  | cache line (64 B)              |
+      |--------------------------------|
 ```
 
 ### Set associative cache
 Eine praktikable Mischung beider Varianten ist ein __set associative__ Cache. In jedem __set__ gibt es eine vorbestimmt Anzahl an __tags__ die durchsucht werden müssen.
 
 ```
-offset:       64bit = 2^6 = 6bit
-cache lines:  256 KB / 64 B = 4096
-index:        4096 / 8 = 512 = 2^9 = 9bit
-tag:          64 - 6 - 9 = 49bit
+given:
+	size = 256 B
+	cache line size = 32 B
+	address type = 16 bit
+	associativity level = 2
 
-|-------------------------------------------------|---------|------|
-|                      49bit                      |   9bit  | 6bit |
-|-------------------------------------------------|---------|------|
-                        tag                          index   offset
+calculate:
+	cache lines = 256 B / 32 B = 8 count
+	offset = log2(8) = 2^3 = 3 bit
+	index = log2(8 / 2) = 2^2 = 2 bit
+	tag = 16 - 2 - 3 = 11 bit
 
-Aussehen:
-                           8-fach assoziativ -->
-  0 |------|------|---     |------------|------------|---
-    | set0 | set1 |        |    set0    |    set1    |   
-    |------|------|---     |------------|------------|---
-    | set0 | set1 |        |    set0    |    set1    |   
-    |------|------|---     |------------|------------|---
-    |      |      |        |            |            |   
+   15                    5 4  3 2    0
+   |----------------------|----|------|
+   |                      |    |      |
+   |----------------------|----|------|
+    tag                   index offset
 
-
-    |      |      |        |            |            |   
-    |------|------|---     |------------|------------|---
-    | set0 | set1 |        |    set0    |    set1    |   
-511 |------|------|---     |------------|------------|---
-      49bit   49bit            64Bytes      64Bytes
+index
+      |--------------------------------|--------------------------------|
+  00  | cache line (64 B)              | cache line (64 B)              |
+      |--------------------------------|--------------------------------|
+  01  | cache line (64 B)              | cache line (64 B)              |
+      |--------------------------------|--------------------------------|
+  10  | cache line (64 B)              | cache line (64 B)              |
+      |--------------------------------|--------------------------------|
+  11  | cache line (64 B)              | cache line (64 B)              |
+      |--------------------------------|--------------------------------|
 ```
 ![github-icon](https://github.com/favicon.ico) [ Übung 3 Aufgabe 6](https://github.com/Fleshgrinder/Praktische_Informatik/tree/master/uebung3/6)
 
-### Berechnungsformeln
-* Der _Offset_ ergibt sich aus der Adresslänge (z. B. 32-bit Adressen 5 da 2⁵ = 32 ist)
-* _Cache Lines:_ Cachegröße ÷ Cache-Line-Größe = Cache-Lines
-* _Index:_ Cache-Lines ÷ Assoziativität = Index
-* _Tag:_ Adresslänge − Offset − Index = Tag
-
-### Rechenbeispiel
-* 32-bit Adressraum
-* 2-fach assoziativ
-* 32 KB großer Cache
-* 32 Byte Cache Lines
-* Berechne:
-  * tag bits
-  * offset bits
-  * cache indices
-  * cache lines im cache
-  * Wie sieht der Cache aus?
-
-```
-offset:       32-bit address = 2^5 = 5bit
-cache lines:  32 KB / 32 B = 1024
-index:        1024 / 2 = 512 = 2^9 = 9bit
-tag:          32 - 5 - 9 = 18bit
-
-|------------------|---------|-----|
-| 18bit            | 9bit    | 5bit|
-|------------------|---------|-----|
- tag                index     offset
-
-Aussehen:
-                           2-fach assoziativ
-  0 |------|------|---     |------------|------------|
-    | set0 | set1 |        |    set0    |    set1    |   
-    |------|------|---     |------------|------------|
-    | set0 | set1 |        |    set0    |    set1    |   
-    |------|------|---     |------------|------------|
-    |      |      |        |            |            |   
-
-
-    |      |      |        |            |            |   
-    |------|------|---     |------------|------------|
-    | set0 | set1 |        |    set0    |    set1    |   
-511 |------|------|---     |------------|------------|
-     18bit  18bit             64Bytes      64Bytes
-```
-
 ### Instruction Trace
-_Brauchen wir das?_
+Der _Instruction Trace_ gibt an was im Cache passiert. Wir zählen ausschließlich Hits und Misses und die Daten selbst sind uns egal.
+
+_Beispiel Trace:_
+```
+L 0000000000000100,16
+L 0000000000001001,8
+```
+
+* _L_ … Load-Anweisung, was für Anweisungen wir erhalten spielt keine Rolle für die Hits und Misses
+* _0000000000000100_ … Adresse die geladen werden soll, muss in Tag[, Index], Offset unterteilt werden
+* _16_ … gibt an wieviel Bytes aus dem Cache gelesen werden sollen
+
+### Hit/Miss-Rate berechnen
+> TODO
 
 ## Interprozesskommunikation
 Dient zum Austausch von Daten zwischen Prozessen. Normalerweise sind Prozesse durch die virtuellen Adressräume strikt getrennt.
